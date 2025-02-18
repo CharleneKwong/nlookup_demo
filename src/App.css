@@ -1,0 +1,162 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.App {
+  width: 100%;
+  max-width: 329px;
+  min-height: 600px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: top;
+  align-items: center;
+}
+
+.logo {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+.otp-screen .logo {
+  display: block;
+  margin: 0 auto 20px;
+}
+
+.verification-container {
+  margin-top: 20px;
+}
+
+.phone-input {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.otp-input-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.otp-input {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  font-size: 18px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.lookup-button, .verify-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 48%;
+}
+
+.lookup-button {
+  display: block;
+  margin: 20px auto;
+}
+
+.otp-button, .block-button {
+  padding: 10px 20px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: block;
+  margin: 20px auto;
+}
+
+.verify-button {
+  display: block;
+  margin: 0 auto;
+  margin-top: 20px;
+  width: 100px;
+}
+
+.status-message {
+  margin-top: 20px;
+  color: #333;
+}
+
+h1 {
+  font-size: 24px;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: white;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 600px) {
+  .App, .otp-screen {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .otp-input {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+}
+
+.lookup-button, .otp-button, .block-button, .verify-button {
+  background-color: #FFCC00; /* Yellow color matching Sinch logo */
+  color: black; /* Change text color to black */
+}
