@@ -1,39 +1,47 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   margin: 0;
+  padding: 0;
+  background-color: #f0f0f0;
 }
 
-.App {
-  width: 100%;
-  max-width: 329px;
-  min-height: 600px;
+.App, 
+.verification-loading-screen, 
+.otp-screen, 
+.welcome-screen {
+  width: 329px;
+  height: 600px;
   background-color: white;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  justify-content: top;
+  justify-content: flex-start;
   align-items: center;
+  text-align: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding-top: 50px;
 }
 
 .logo {
-  width: 100px;
-  margin-bottom: 20px;
-}
-
-.otp-screen .logo {
+  width: 120px;
+  height: auto;
   display: block;
-  margin: 0 auto 20px;
+  margin: 0 auto 30px;
+  position: relative;
+  top: 0;
 }
 
-.verification-container {
-  margin-top: 20px;
+.App .logo,
+.verification-loading-screen .logo,
+.otp-screen .logo,
+.welcome-screen .logo {
+  margin-bottom: 30px;
 }
 
 .phone-input {
@@ -47,8 +55,9 @@ body {
 .otp-input-container {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 5px;
+  margin: 20px 0;
+  padding: 0 20px;
 }
 
 .otp-input {
@@ -79,7 +88,7 @@ body {
 
 .lookup-button {
   display: block;
-  margin: 20px auto;
+  margin: 40px auto;
 }
 
 .otp-button, .block-button {
@@ -130,6 +139,11 @@ h1 {
   color: white;
 }
 
+.App-header h1 {
+  text-align: center;
+  font-size: 16px;
+}
+
 .App-link {
   color: #61dafb;
 }
@@ -145,7 +159,6 @@ h1 {
 
 @media (max-width: 600px) {
   .App, .otp-screen {
-    width: 100%;
     padding: 10px;
   }
 
@@ -159,4 +172,83 @@ h1 {
 .lookup-button, .otp-button, .block-button, .verify-button {
   background-color: #FFCC00; /* Yellow color matching Sinch logo */
   color: black; /* Change text color to black */
+}
+
+.hint-text {
+  font-size: 12px;
+  font-style: italic;
+  color: #666;
+  margin-top: 5px;
+  margin-bottom: 50px;
+}
+
+.verification-loading-screen {
+  justify-content: flex-start;
+  padding-top: 50px;
+}
+
+.verification-loading-text {
+  font-size: 16px;
+  color: #333;
+  max-width: 280px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.fraud-warning {
+  color: red;
+  font-size: 12px;
+  margin-top: 15px;
+  text-align: center;
+}
+
+.fraud-warning a {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.welcome-screen {
+  justify-content: flex-start;
+  padding-top: 50px;
+}
+
+.welcome-screen h1 {
+  font-size: 24px;
+  color: black;
+  text-align: center;
+}
+
+.otp-screen {
+  justify-content: flex-start;
+  padding-top: 50px;
+}
+
+.otp-screen h1 {
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.otp-screen p {
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.otp-input-container {
+  margin: 20px 0;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #FFCC00;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

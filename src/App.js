@@ -7,9 +7,9 @@ function App() {
   const [otp, setOtp] = useState(Array(6).fill(''));
   const [lineType, setLineType] = useState('');
   const [verificationStatus, setVerificationStatus] = useState('');
-  const [showOtpScreen, setShowOtpScreen] = useState(false);
   const [lookupMessage, setLookupMessage] = useState('');
   const [warningMessage, setWarningMessage] = useState('');
+  const [currentScreen, setCurrentScreen] = useState('phoneInput');
 
   const lineTypes = ['VoIP', 'Temporary', 'Mobile', 'Landline'];
   const [currentTypeIndex, setCurrentTypeIndex] = useState(0);
@@ -28,40 +28,63 @@ function App() {
   };
 
   const performNumberLookup = async () => {
+    // Validate phone number
+    if (!phoneNumber) {
+      setWarningMessage('Please enter a phone number');
+      return;
+    }
+
+    // Get the current line type
     const simulatedApiResponse = lineTypes[currentTypeIndex];
     setLineType(simulatedApiResponse);
-    setLookupMessage(`Performing Number lookup ... Detecting line type is: ${simulatedApiResponse}`);
-    if (simulatedApiResponse === 'VoIP' || simulatedApiResponse === 'Temporary') {
-      setWarningMessage('Risky number detected. Proceed with caution.');
-    } else {
-      setWarningMessage('');
-    }
-    setCurrentTypeIndex((currentTypeIndex + 1) % lineTypes.length);
-  };
-
-  const proceedToOtp = () => {
-    setShowOtpScreen(true);
-  };
-
-  const blockNumber = () => {
-    alert('This number is blocked due to risk.');
+    
+    // Always go to verification loading screen first
+    setCurrentScreen('verificationLoading');
+    
+    // Simulate API delay and then determine next screen based on line type
+    setTimeout(() => {
+      switch (simulatedApiResponse) {
+        case 'VoIP':
+        case 'Temporary':
+          // For VoIP or Temporary numbers, show fraud warning
+          setCurrentScreen('phoneInput');
+          setWarningMessage(
+            `This number has been identified as potentially fraudulent. Please contact <a href="mailto:support@sinch.com" style="color: blue; text-decoration: underline;">customer support</a>.`
+          );
+          break;
+        case 'Mobile':
+        case 'Landline':
+          // For Mobile or Landline, proceed to OTP verification
+          setCurrentScreen('otpVerification');
+          break;
+      }
+      
+      // Cycle through line types to cover all cases
+      setCurrentTypeIndex((currentTypeIndex + 1) % lineTypes.length);
+    }, 3000);
   };
 
   const verifyOtp = () => {
     if (otp.join('') === '600123') {
       setVerificationStatus('Verified successfully!');
+      // Move to welcome screen after successful verification
+      setCurrentScreen('welcomeScreen');
     } else {
-      setVerificationStatus('Verification failed. Try again.');
+      setVerificationStatus('Incorrect verification code. Please try again.');
     }
+  };
+
+  const handleSupportEmailClick = () => {
+    window.location.href = 'mailto:support@sinch.com';
   };
 
   return (
     <div className="App">
-      {!showOtpScreen ? (
+      {currentScreen === 'phoneInput' && (
         <div>
           <header className="App-header">
             <img src={sinchLogo} alt="Sinch" className="logo" />
-            <h1 style={{ color: 'black' }}>Optimize your onboarding with Number lookup and verification</h1>
+            <h1 style={{ color: 'black' }}>For security reasons, please add your telephone number to complete your registration.</h1>
           </header>
           <div className="verification-container">
             <input
@@ -71,24 +94,38 @@ function App() {
               placeholder="Enter your phone number"
               className="phone-input"
             />
+            <p className="hint-text">Use your mobile or fixed line telephone numbers only</p>
             <button onClick={performNumberLookup} className="lookup-button">Register</button>
             {lookupMessage && <p>{lookupMessage}</p>}
-            {warningMessage && <p style={{ color: 'red' }}>{warningMessage}</p>}
+            {warningMessage && (
+              <div 
+                className="fraud-warning" 
+                dangerouslySetInnerHTML={{ 
+                  __html: warningMessage 
+                }} 
+              />
+            )}
             {lineType && (
               <div className="button-row">
-                {lineType === 'Mobile' && <button onClick={proceedToOtp} className="otp-button">Send OTP via SMS</button>}
-                {lineType === 'Landline' && <button onClick={proceedToOtp} className="otp-button">Call this number to get OTP</button>}
-                {(lineType === 'VoIP' || lineType === 'Temporary') && (
-                  <>
-                    <button onClick={proceedToOtp} className="otp-button">Proceed to OTP</button>
-                    <button onClick={blockNumber} className="block-button">Block this number</button>
-                  </>
-                )}
+                {lineType === 'Mobile' && <button onClick={performNumberLookup} className="otp-button">Send OTP via SMS</button>}
+                {lineType === 'Landline' && <button onClick={performNumberLookup} className="otp-button">Call this number to get OTP</button>}
               </div>
             )}
           </div>
         </div>
-      ) : (
+      )}
+
+      {currentScreen === 'verificationLoading' && (
+        <div className="verification-loading-screen">
+          <img src={sinchLogo} alt="Sinch" className="logo" />
+          <div className="spinner"></div>
+          <p className="verification-loading-text">
+            We are checking the validity of this number provided against regulator information and third party sources to protect against fraud
+          </p>
+        </div>
+      )}
+
+      {currentScreen === 'otpVerification' && (
         <div className="otp-screen">
           <img src={sinchLogo} alt="Sinch" className="logo" />
           <h1>Verify your number</h1>
@@ -110,6 +147,13 @@ function App() {
             <button onClick={verifyOtp} className="verify-button">Verify</button>
           </div>
           {verificationStatus && <p className="status-message">{verificationStatus}</p>}
+        </div>
+      )}
+
+      {currentScreen === 'welcomeScreen' && (
+        <div className="welcome-screen">
+          <img src={sinchLogo} alt="Sinch" className="logo" />
+          <h1>Welcome Onboard</h1>
         </div>
       )}
     </div>
