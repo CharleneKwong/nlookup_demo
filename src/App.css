@@ -16,7 +16,7 @@ body {
   width: 329px;
   height: 600px;
   background-color: white;
-  padding: 20px;
+  padding: 0 20px 20px 20px;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -25,7 +25,7 @@ body {
   text-align: center;
   overflow: hidden;
   box-sizing: border-box;
-  padding-top: 50px;
+  position: relative;
 }
 
 .logo {
@@ -45,11 +45,12 @@ body {
 }
 
 .phone-input {
-  width: calc(100% - 20px);
+  width: 185px;
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
+  box-sizing: border-box;
 }
 
 .otp-input-container {
@@ -87,8 +88,13 @@ body {
 }
 
 .lookup-button {
-  display: block;
-  margin: 40px auto;
+  display: inline-block;
+  white-space: nowrap;
+  margin: 10px auto;
+  padding: 10px 15px;
+  text-align: center;
+  width: auto;
+  align-self: center;
 }
 
 .otp-button, .block-button {
@@ -251,4 +257,224 @@ h1 {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.back-to-menu-small {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.security-setting {
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.security-setting h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.setting-status {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.status-active {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+.verification-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-label {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.toggle-label:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-label {
+  background-color: #FFCC00;
+}
+
+.toggle-switch input:checked + .toggle-label:before {
+  transform: translateX(26px);
+}
+
+.two-step-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.two-step-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.logo.profile-logo {
+  width: 120px;
+  height: auto;
+  margin-bottom: 10px;
+  align-self: center;
+}
+
+.App .logo.profile-logo,
+.verification-loading-screen .logo.profile-logo,
+.otp-screen .logo.profile-logo,
+.welcome-screen .logo.profile-logo {
+  margin-bottom: 30px;
+  width: 80px;
+  height: auto;
+  display: block;
+  margin-top: 80px;
+  align-self: center;
+}
+
+.lookup-button {
+  display: inline-block;
+  white-space: nowrap;
+  margin: 10px auto;
+  padding: 10px 15px;
+  text-align: center;
+  width: auto;
+  align-self: center;
+}
+
+.security-description {
+  margin: 0;
+  padding: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  min-height: 98px;
+  display: flex;
+  align-items: flex-start;
+  text-align: left;
+  font-style: italic;
+  color: #666;
+}
+
+.security-description.active {
+  color: #666;
+}
+
+.security-description.recommendation {
+  color: #666;
+}
+
+.reset-password-button {
+  margin-top: 20px;
+}
+
+.reset-password-button:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+.security-settings-box {
+  width: calc(100% - 40px);
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.password-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.phone-input {
+  width: 185px;
+  box-sizing: border-box;
+}
+
+.error-placeholder {
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.error-message {
+  margin: 0;
+  color: red;
+  font-size: 12px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sim-swap-warning {
+  color: #d32f2f;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.support-contact {
+  margin-bottom: 20px;
+}
+
+.support-contact a {
+  color: #1976d2;
+  text-decoration: underline;
 }

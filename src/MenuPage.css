@@ -1,0 +1,73 @@
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.menu-page {
+  width: 329px;
+  height: 600px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40px 20px 40px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.menu-page .logo {
+  width: 120px;
+  height: auto;
+  margin-bottom: 10px;
+  align-self: center;
+}
+
+.menu-page h1 {
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.app-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.app-card {
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s;
+  text-align: center;
+}
+
+.app-card:hover {
+  transform: scale(1.05);
+}
+
+.app-card h2 {
+  margin-bottom: 5px;
+  font-size: 18px;
+}
+
+.app-card p {
+  font-size: 14px;
+  margin: 0;
+}
