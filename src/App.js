@@ -3,7 +3,6 @@ import './App.css';
 import MenuPage from './MenuPage';
 import OnboardingApp from './OnboardingApp';
 import PasswordResetApp from './PasswordResetApp';
-import NLookupApp from './NLookupApp';
 
 function App() {
   const [currentApp, setCurrentApp] = useState(null);
@@ -22,8 +21,6 @@ function App() {
         return <OnboardingApp onBack={handleBackToMenu} />;
       case 'Password Reset':
         return <PasswordResetApp onBack={handleBackToMenu} />;
-      case 'NLookup':
-        return <NLookupApp onBack={handleBackToMenu} />;
       default:
         return <MenuPage onSelectApp={handleSelectApp} />;
     }

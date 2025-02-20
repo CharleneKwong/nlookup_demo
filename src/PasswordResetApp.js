@@ -10,7 +10,7 @@ function PasswordResetApp({ onBack }) {
   const [passwordError, setPasswordError] = useState('');
   const [isTwoStepEnabled, setIsTwoStepEnabled] = useState(true);
   const [isBackendChecking, setIsBackendChecking] = useState(false);
-  const [screenFlow, setScreenFlow] = useState(['simSwapWarning', 'otpVerification']);
+  const [verificationError, setVerificationError] = useState('');
 
   const handleOtpChange = (index, value) => {
     const newOtp = [...otp];
@@ -25,12 +25,18 @@ function PasswordResetApp({ onBack }) {
     setIsTwoStepEnabled(!isTwoStepEnabled);
   };
 
-  const verifyOtp = () => {
-    // Simulate OTP verification
-    if (otp.join('') === '600123') {
-      setCurrentScreen('newPassword');
+  const handleVerifyOTP = () => {
+    const otpInput = otp.join('');
+    if (otpInput.length === 6) {
+      // Simulated OTP verification
+      if (otpInput === '600123') {
+        setCurrentScreen('newPassword');
+        setVerificationError(''); // Clear any previous errors
+      } else {
+        setVerificationError('Incorrect verification code. Please try again.');
+      }
     } else {
-      alert('Incorrect verification code');
+      setVerificationError('Please enter a 6-digit verification code');
     }
   };
 
@@ -55,34 +61,35 @@ function PasswordResetApp({ onBack }) {
       return;
     }
 
-    // Simulate password reset
     setCurrentScreen('passwordResetConfirmation');
   };
 
-  const handleResetPassword = () => {
-    if (!isTwoStepEnabled) {
-      setCurrentScreen('newPassword');
-    } else {
-      // Simulate backend checking
-      setIsBackendChecking(true);
-      
-      setTimeout(() => {
-        setIsBackendChecking(false);
-        
-        // Rotate the screen flow array
-        const [nextScreen, ...remainingScreens] = screenFlow;
-        setCurrentScreen(nextScreen);
-        
-        // Rearrange the screen flow
-        setScreenFlow([...remainingScreens, nextScreen]);
-      }, 2000); // 2 seconds simulating backend check
-    }
-  };
+const handleResetPassword = () => {
 
-  const handleScreenNavigation = (screen) => {
-    setCurrentScreen(screen);
-  };
+  if (!isTwoStepEnabled) {
+    setCurrentScreen('newPassword');
+    return;
+  }
 
+  setIsBackendChecking(true);
+  
+  setTimeout(() => {
+    setIsBackendChecking(false);
+
+    // Alternate between true and false on each call
+    window.simSwapToggle = !window.simSwapToggle;
+    const simSwapDetected = window.simSwapToggle;
+
+    const nextScreen = simSwapDetected ? 'simSwapWarning' : 'otpVerification';
+
+    setCurrentScreen(nextScreen);
+  }, 3000); // Simulating backend check delay
+
+};
+
+
+  // Rest of your component code remains the same...
+  
   if (isBackendChecking) {
     return (
       <div className="verification-loading-screen">
@@ -225,7 +232,18 @@ function PasswordResetApp({ onBack }) {
               />
             ))}
           </div>
-          <button onClick={verifyOtp} className="verify-button">Verify</button>
+          <button onClick={handleVerifyOTP} className="verify-button">Verify</button>
+          {verificationError && (
+            <div className="error-message" style={{
+              color: 'red', 
+              marginTop: '15px', 
+              marginBottom: '15px', // Add margin to the error message
+              textAlign: 'center',
+              fontSize: '14px'
+            }}>
+              {verificationError}
+            </div>
+          )}
         </div>
       )}
     </div>
