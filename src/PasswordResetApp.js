@@ -11,6 +11,7 @@ function PasswordResetApp({ onBack }) {
   const [isTwoStepEnabled, setIsTwoStepEnabled] = useState(true);
   const [isBackendChecking, setIsBackendChecking] = useState(false);
   const [verificationError, setVerificationError] = useState('');
+  const [warningCycleIndex, setWarningCycleIndex] = useState(0);
 
   const handleOtpChange = (index, value) => {
     const newOtp = [...otp];
@@ -64,29 +65,26 @@ function PasswordResetApp({ onBack }) {
     setCurrentScreen('passwordResetConfirmation');
   };
 
-const handleResetPassword = () => {
+  const handleResetPassword = () => {
+    if (!isTwoStepEnabled) {
+      setCurrentScreen('newPassword');
+      return;
+    }
 
-  if (!isTwoStepEnabled) {
-    setCurrentScreen('newPassword');
-    return;
-  }
+    setIsBackendChecking(true);
+    
+    setTimeout(() => {
+      setIsBackendChecking(false);
 
-  setIsBackendChecking(true);
-  
-  setTimeout(() => {
-    setIsBackendChecking(false);
-
-    // Alternate between true and false on each call
-    window.simSwapToggle = !window.simSwapToggle;
-    const simSwapDetected = window.simSwapToggle;
-
-    const nextScreen = simSwapDetected ? 'simSwapWarning' : 'otpVerification';
-
-    setCurrentScreen(nextScreen);
-  }, 3000); // Simulating backend check delay
-
-};
-
+      // Cycle through warning screens
+      const warningScreens = ['simSwapWarning', 'rndWarning', 'otpVerification'];
+      const nextScreenIndex = ((window.warningCycleIndex || 0) + 1) % warningScreens.length;
+      const nextScreen = warningScreens[nextScreenIndex];
+        
+      window.warningCycleIndex = nextScreenIndex;
+      setCurrentScreen(nextScreen);
+    }, 3000); // Simulating backend check delay
+  };
 
   // Rest of your component code remains the same...
   
@@ -107,10 +105,29 @@ const handleResetPassword = () => {
       <div className="App">
         <button onClick={onBack} className="back-to-menu-small">&lt;</button>
         <img src={sinchLogo} alt="Profile" className="logo profile-logo" />
-        <h1>Account Security Alert</h1>
+        <h1>SIM swap detected</h1>
         <div className="verification-container">
           <p className="sim-swap-warning">
             A SIM swap has been detected in the last 4 hours. 
+            Password reset rejected. Your account is locked.
+          </p>
+          <p className="support-contact">
+            Please contact <a href="mailto:support@sinch.com">customer support</a> to unlock your account.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentScreen === 'rndWarning') {
+    return (
+      <div className="App">
+        <button onClick={onBack} className="back-to-menu-small">&lt;</button>
+        <img src={sinchLogo} alt="Profile" className="logo profile-logo" />
+        <h1>Number has been recycled</h1>
+        <div className="verification-container">
+          <p className="sim-swap-warning">
+            This number has been recycled. 
             Password reset rejected. Your account is locked.
           </p>
           <p className="support-contact">
