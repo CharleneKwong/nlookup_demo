@@ -80,7 +80,7 @@ function PasswordResetApp({ onBack }) {
       const warningScreens = ['simSwapWarning', 'rndWarning', 'otpVerification'];
       const nextScreenIndex = ((window.warningCycleIndex || 0) + 1) % warningScreens.length;
       const nextScreen = warningScreens[nextScreenIndex];
-        
+         
       window.warningCycleIndex = nextScreenIndex;
       setCurrentScreen(nextScreen);
     }, 3000); // Simulating backend check delay

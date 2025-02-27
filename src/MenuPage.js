@@ -6,12 +6,12 @@ function MenuPage({ onSelectApp }) {
   const apps = [
     {
       name: 'Onboarding',
-      description: 'Number lookup and verification flow',
+      description: 'Number lookup and verification flow to prevent suspicious nubmers from signing up',
       color: '#4CAF50'
     },
     {
       name: 'Password Reset',
-      description: 'SIM swap detection to mitigate account takeover and recycled number detection',
+      description: 'Preventing account takeover by SIM swap and recycled number detection',
       color: '#2196F3'
     }
   ];
@@ -19,7 +19,7 @@ function MenuPage({ onSelectApp }) {
   return (
     <div className="menu-page">
       <img src={sinchLogo} alt="Sinch Logo" className="logo"/>
-      <h1>Identity and Verification Use Case Demo</h1>
+      <h1>Identity and Verification prototype</h1>
       <div className="app-grid">
         {apps.map((app) => (
           <div 
