@@ -11,7 +11,7 @@ function MenuPage({ onSelectApp }) {
     },
     {
       name: 'Password Reset',
-      description: 'SIM swap detection to mitigate account takeover',
+      description: 'SIM swap detection to mitigate account takeover and recycled number detection',
       color: '#2196F3'
     }
   ];
@@ -19,7 +19,7 @@ function MenuPage({ onSelectApp }) {
   return (
     <div className="menu-page">
       <img src={sinchLogo} alt="Sinch Logo" className="logo"/>
-      <h1>Verification and Identity Use Case Demo</h1>
+      <h1>Identity and Verification Use Case Demo</h1>
       <div className="app-grid">
         {apps.map((app) => (
           <div 
