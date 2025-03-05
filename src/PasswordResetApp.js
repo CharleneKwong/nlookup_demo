@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import sinchLogo from './profile-user.png';
 import './App.css';
 
-function PasswordResetApp({ onBack }) {
+function PasswordResetApp({ onBack, phoneNumber }) {
   const [currentScreen, setCurrentScreen] = useState('securitySettings');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [newPassword, setNewPassword] = useState('');
@@ -26,18 +26,41 @@ function PasswordResetApp({ onBack }) {
     setIsTwoStepEnabled(!isTwoStepEnabled);
   };
 
-  const handleVerifyOTP = () => {
-    const otpInput = otp.join('');
-    if (otpInput.length === 6) {
-      // Simulated OTP verification
-      if (otpInput === '600123') {
-        setCurrentScreen('newPassword');
-        setVerificationError(''); // Clear any previous errors
+  const handleVerifyOTP = async () => {
+    const enteredCode = otp.join('');
+    const apiKey = "86fa126d-803b-4921-b16c-1bcf8729c87d";
+    const apiSecret = "uYPbJirOq0qUNZBruQhAnQ==";
+    const base64Credentials = btoa(`${apiKey}:${apiSecret}`);
+
+    try {
+      const response = await fetch(`https://verification.api.sinch.com/verification/v1/verifications/number/${phoneNumber}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${base64Credentials}`
+        },
+        body: JSON.stringify({
+          method: 'sms',
+          sms: {
+            code: enteredCode
+          }
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === 'APPROVED' || data.status === 'SUCCESSFUL') {
+          setCurrentScreen('newPassword');
+          setVerificationError('');
+        } else {
+          setVerificationError('Verification failed. Please try again.');
+        }
       } else {
-        setVerificationError('Incorrect verification code. Please try again.');
+        throw new Error('Verification code verification failed');
       }
-    } else {
-      setVerificationError('Please enter a 6-digit verification code');
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      setVerificationError('Failed to verify the OTP. Please try again.');
     }
   };
 
@@ -65,7 +88,12 @@ function PasswordResetApp({ onBack }) {
     setCurrentScreen('passwordResetConfirmation');
   };
 
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
+    if (!phoneNumber) {
+      setVerificationError('No phone number available. Please complete onboarding first.');
+      return;
+    }
+
     if (!isTwoStepEnabled) {
       setCurrentScreen('newPassword');
       return;
@@ -73,17 +101,62 @@ function PasswordResetApp({ onBack }) {
 
     setIsBackendChecking(true);
     
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsBackendChecking(false);
-
+      
       // Cycle through warning screens
       const warningScreens = ['simSwapWarning', 'rndWarning', 'otpVerification'];
       const nextScreenIndex = ((window.warningCycleIndex || 0) + 1) % warningScreens.length;
       const nextScreen = warningScreens[nextScreenIndex];
-         
       window.warningCycleIndex = nextScreenIndex;
       setCurrentScreen(nextScreen);
+
+      // Only trigger verification API if we're moving to OTP verification screen
+      if (nextScreen === 'otpVerification') {
+        const apiKey = "86fa126d-803b-4921-b16c-1bcf8729c87d";
+        const apiSecret = "uYPbJirOq0qUNZBruQhAnQ==";
+        const base64Credentials = btoa(`${apiKey}:${apiSecret}`);
+
+        try {
+          console.log('Sending verification request for phone number:', phoneNumber);
+          const verifyResponse = await fetch('https://verification.api.sinch.com/verification/v1/verifications', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Basic ${base64Credentials}`
+            },
+            body: JSON.stringify({
+              identity: {
+                type: 'number',
+                endpoint: phoneNumber
+              },
+              method: 'sms'
+            })
+          });
+
+          console.log('Response status:', verifyResponse.status);
+          const responseData = await verifyResponse.json();
+          console.log('Response data:', responseData);
+
+          if (!verifyResponse.ok) {
+            throw new Error(`Verification code request failed: ${responseData.message || 'Unknown error'}`);
+          }
+
+          setVerificationError('');
+        } catch (error) {
+          console.error('Detailed error:', error);
+          setVerificationError(`Failed to send verification code: ${error.message}`);
+          setCurrentScreen('phoneInput');
+        }
+      }
     }, 3000); // Simulating backend check delay
+  };
+
+  const maskPhoneNumber = (number) => {
+    if (!number || number.length < 4) return number;
+    const maskedPart = '*'.repeat(number.length - 4);
+    const visiblePart = number.slice(-4);
+    return maskedPart + visiblePart;
   };
 
   // Rest of your component code remains the same...
@@ -165,7 +238,7 @@ function PasswordResetApp({ onBack }) {
               </div>
               {isTwoStepEnabled ? (
                 <p className="security-description active">
-                  An additional layer of security is enabled to protect your account. You will receive a SMS one time passcode to verify it it you.
+                  An additional layer of security is enabled to protect your account. You will receive a SMS one time passcode on {maskPhoneNumber(phoneNumber)} to verify it is you.
                 </p>
               ) : (
                 <p className="security-description recommendation">
@@ -174,9 +247,17 @@ function PasswordResetApp({ onBack }) {
               )}
             </div>
             
+            <div className="error-placeholder">
+              {isTwoStepEnabled && !phoneNumber && (
+                <p className="error-message" style={{ color: 'red' }}>
+                  Please enter the phone number in the onboarding flow.
+                </p>
+              )}
+            </div>
             <button 
               onClick={handleResetPassword} 
               className="lookup-button reset-password-button"
+              disabled={isTwoStepEnabled && !phoneNumber}
             >
               Reset Password
             </button>

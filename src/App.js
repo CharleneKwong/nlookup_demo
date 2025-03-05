@@ -6,6 +6,7 @@ import PasswordResetApp from './PasswordResetApp';
 
 function App() {
   const [currentApp, setCurrentApp] = useState(null);
+  const [sharedPhoneNumber, setSharedPhoneNumber] = useState('');
 
   const handleSelectApp = (appName) => {
     setCurrentApp(appName);
@@ -15,12 +16,23 @@ function App() {
     setCurrentApp(null);
   };
 
+  const handlePhoneNumberUpdate = (phoneNumber) => {
+    setSharedPhoneNumber(phoneNumber);
+  };
+
   const renderSelectedApp = () => {
     switch (currentApp) {
       case 'Onboarding':
-        return <OnboardingApp onBack={handleBackToMenu} />;
+        return <OnboardingApp 
+          onBack={handleBackToMenu} 
+          phoneNumber={sharedPhoneNumber}
+          onPhoneNumberChange={handlePhoneNumberUpdate}
+        />;
       case 'Password Reset':
-        return <PasswordResetApp onBack={handleBackToMenu} />;
+        return <PasswordResetApp 
+          onBack={handleBackToMenu}
+          phoneNumber={sharedPhoneNumber}
+        />;
       default:
         return <MenuPage onSelectApp={handleSelectApp} />;
     }

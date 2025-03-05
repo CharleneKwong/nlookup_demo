@@ -6,7 +6,7 @@ function MenuPage({ onSelectApp }) {
   const apps = [
     {
       name: 'Onboarding',
-      description: 'Number lookup and verification flow to prevent suspicious nubmers from signing up',
+      description: 'Number lookup and verification flow to prevent suspicious numbers from signing up',
       color: '#4CAF50'
     },
     {
