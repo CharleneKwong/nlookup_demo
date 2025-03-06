@@ -89,13 +89,13 @@ function PasswordResetApp({ onBack, phoneNumber }) {
   };
 
   const handleResetPassword = async () => {
-    if (!phoneNumber) {
-      setVerificationError('No phone number available. Please complete onboarding first.');
+    if (!isTwoStepEnabled) {
+      setCurrentScreen('newPassword');
       return;
     }
 
-    if (!isTwoStepEnabled) {
-      setCurrentScreen('newPassword');
+    if (!phoneNumber) {
+      setVerificationError('No phone number available. Please complete onboarding first.');
       return;
     }
 
@@ -238,7 +238,11 @@ function PasswordResetApp({ onBack, phoneNumber }) {
               </div>
               {isTwoStepEnabled ? (
                 <p className="security-description active">
-                  An additional layer of security is enabled to protect your account. You will receive a SMS one time passcode on {maskPhoneNumber(phoneNumber)} to verify it is you.
+                  {phoneNumber ? (
+                    <span>An additional layer of security is enabled to protect your account. You will receive a SMS one time passcode on {maskPhoneNumber(phoneNumber)} to verify it is you.</span>
+                  ) : (
+                    <span>An additional layer of security is enabled to protect your account. You will receive a SMS one time passcode to verify it is you.</span>
+                  )}
                 </p>
               ) : (
                 <p className="security-description recommendation">
