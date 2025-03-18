@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import MenuPage from './MenuPage';
 import OnboardingApp from './OnboardingApp';
@@ -8,13 +8,6 @@ import { Analytics } from '@vercel/analytics/react';
 function App() {
   const [currentApp, setCurrentApp] = useState(null);
   const [sharedPhoneNumber, setSharedPhoneNumber] = useState('');
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.va) {
-      const path = currentApp ? `/${currentApp.replace(' ', '-').toLowerCase()}` : '/';
-      window.va('track', 'pageview', { path });
-    }
-  }, [currentApp]);
 
   const handleSelectApp = (appName) => {
     setCurrentApp(appName);
@@ -38,6 +31,12 @@ function App() {
         />;
       case 'Password Reset':
         return <PasswordResetApp 
+          onBack={handleBackToMenu}
+          phoneNumber={sharedPhoneNumber}
+          onPhoneNumberChange={handlePhoneNumberUpdate}
+        />;
+      case 'User Profile':
+        return <div 
           onBack={handleBackToMenu}
           phoneNumber={sharedPhoneNumber}
         />;

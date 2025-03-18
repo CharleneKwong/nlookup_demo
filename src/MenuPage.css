@@ -36,11 +36,17 @@ body {
 }
 
 .menu-page h1 {
-  margin: 5px 0 40px 0 !important;
+  margin: 5px 0 0.2rem 0 !important;
   padding: 0 !important;
   font-size: 18px;
   color: #333;
   line-height: 1;
+}
+
+.menu-page .subtitle {
+  font-size: 1.0rem;
+  color: #666;
+  margin-bottom: 1.5rem;
 }
 
 .app-grid {

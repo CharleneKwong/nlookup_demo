@@ -1,9 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import sinchLogo from './profile-user.png';
 import './App.css';
 
-function PasswordResetApp({ onBack, phoneNumber }) {
-  const [currentScreen, setCurrentScreen] = useState('securitySettings');
+function BackButton({ onBack }) {
+  return (
+    <button onClick={onBack} className="back-to-menu-small">
+      &lt;
+    </button>
+  );
+}
+
+function PasswordResetApp({ onBack, phoneNumber, onPhoneNumberChange }) {
+  const [currentScreen, setCurrentScreen] = useState('userProfile');
+  const [user, setUser] = useState({
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    phoneNumber: phoneNumber
+  });
+  const [newPhoneNumber, setNewPhoneNumber] = useState(phoneNumber || '');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -159,8 +173,60 @@ function PasswordResetApp({ onBack, phoneNumber }) {
     return maskedPart + visiblePart;
   };
 
-  // Rest of your component code remains the same...
-  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (newPhoneNumber) {
+        setUser(prev => ({
+          ...prev,
+          phoneNumber: newPhoneNumber
+        }));
+        onPhoneNumberChange(newPhoneNumber);
+      }
+    }, 1000); // 1 second debounce
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [newPhoneNumber]);
+
+  const renderUserProfile = () => (
+    <div className="App">
+      <BackButton onBack={onBack} />
+      <img src={sinchLogo} alt="Profile" className="logo profile-logo" />
+      <h1>User Profile</h1>
+      <div className="verification-container">
+        <div className="profile-info" style={{ textAlign: 'left', width: '100%' }}>
+          <p><strong>Name:</strong> {user.name}</p>
+          <p><strong>Email:</strong> {user.email}</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', whiteSpace: 'nowrap' }}>
+              <p style={{ margin: 0 }}><strong>Phone Number:</strong></p>
+              <input
+                type="tel"
+                value={newPhoneNumber}
+                onChange={(e) => setNewPhoneNumber(e.target.value)}
+                placeholder="Enter a phone number"
+                style={{
+                  padding: '4px',
+                  border: '1px solid #ccc',
+                  borderRadius: '2px',
+                  width: '135px'
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        <button 
+          className="lookup-button"
+          onClick={() => setCurrentScreen('securitySettings')}
+          style={{ marginTop: '40px' }}
+        >
+          Reset Password
+        </button>
+      </div>
+    </div>
+  );
+
   if (isBackendChecking) {
     return (
       <div className="verification-loading-screen">
@@ -173,10 +239,14 @@ function PasswordResetApp({ onBack, phoneNumber }) {
     );
   }
 
+  if (currentScreen === 'userProfile') {
+    return renderUserProfile();
+  }
+
   if (currentScreen === 'simSwapWarning') {
     return (
       <div className="App">
-        <button onClick={onBack} className="back-to-menu-small">&lt;</button>
+        <BackButton onBack={onBack} />
         <img src={sinchLogo} alt="Profile" className="logo profile-logo" />
         <h1>SIM swap detected</h1>
         <div className="verification-container">
@@ -195,7 +265,7 @@ function PasswordResetApp({ onBack, phoneNumber }) {
   if (currentScreen === 'rndWarning') {
     return (
       <div className="App">
-        <button onClick={onBack} className="back-to-menu-small">&lt;</button>
+        <BackButton onBack={onBack} />
         <img src={sinchLogo} alt="Profile" className="logo profile-logo" />
         <h1>Number has been recycled</h1>
         <div className="verification-container">
@@ -211,10 +281,155 @@ function PasswordResetApp({ onBack, phoneNumber }) {
     );
   }
 
+  if (currentScreen === 'securitySettings') {
+    return (
+      <div>
+        <BackButton onBack={onBack} />
+        <img src={sinchLogo} alt="Profile" className="logo profile-logo" />
+        <h1>Account Settings</h1>
+        <div className="verification-container">
+          <div className="security-settings-box">
+            <div className="two-step-header">
+              <h3>Two-Step Verification</h3>
+              <div className="toggle-switch">
+                <input 
+                  type="checkbox" 
+                  id="twoStepToggle" 
+                  checked={isTwoStepEnabled}
+                  onChange={toggleTwoStepVerification}
+                />
+                <label htmlFor="twoStepToggle" className="toggle-label">
+                  <span className="toggle-inner"></span>
+                  <span className="toggle-switch-outer"></span>
+                </label>
+              </div>
+            </div>
+            {isTwoStepEnabled ? (
+              <p className="security-description active">
+                {phoneNumber ? (
+                  <span> Your account is protected by two-step verification. We will confirm your password reset by first sending you an OTP code on {maskPhoneNumber(phoneNumber)}.</span>
+                ) : (
+                  <span>Your account is protected by two-step verification. We will confirm your password reset by first sending you an OTP code</span>
+                )}
+              </p>
+            ) : (
+              <p className="security-description recommendation">
+                It is recommended to have two-step verification on to secure your account.
+              </p>
+            )}
+          </div>
+          
+          <div className="error-placeholder">
+            {isTwoStepEnabled && !phoneNumber && (
+              <p className="error-message" style={{ color: 'red' }}>
+                Please add a phone number in the user profile.
+              </p>
+            )}
+          </div>
+          <button 
+            onClick={handleResetPassword} 
+            className="lookup-button reset-password-button"
+            disabled={isTwoStepEnabled && !phoneNumber}
+          >
+            Click to continue
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentScreen === 'newPassword') {
+    return (
+      <div>
+        <BackButton onBack={onBack} />
+        <img src={sinchLogo} alt="Profile" className="logo profile-logo" />
+        <h1>Reset Password</h1>
+        <div className="verification-container">
+          <div className="password-input-container">
+            <input
+              type="password"
+              placeholder="Enter new password"
+              value={newPassword}
+              onChange={handleNewPasswordChange}
+              className="phone-input"
+            />
+            <input
+              type="password"
+              placeholder="Confirm new password"
+              value={confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              className="phone-input"
+            />
+            <div className="error-placeholder">
+              {passwordError && (
+                <p className="error-message">{passwordError}</p>
+              )}
+            </div>
+          </div>
+          <button 
+            onClick={validateAndSubmitPassword} 
+            className="lookup-button"
+          >
+            Submit New Password
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentScreen === 'passwordResetConfirmation') {
+    return (
+      <div>
+        <BackButton onBack={onBack} />
+        <img src={sinchLogo} alt="Profile" className="logo profile-logo" />
+        <h1>Password Reset Successful</h1>
+        <div className="verification-container">
+          <p>Your password has been successfully reset.</p>
+          <p>Please log in with your new password.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentScreen === 'otpVerification') {
+    return (
+      <div className="otp-screen">
+        <BackButton onBack={onBack} />
+        <img src={sinchLogo} alt="Profile" className="logo profile-logo" />
+        <h1>Verify Your Identity</h1>
+        <p>Enter the 6-digit verification code</p>
+        <div className="otp-input-container">
+          {otp.map((digit, index) => (
+            <input
+              key={index}
+              type="text"
+              value={digit}
+              onChange={(e) => handleOtpChange(index, e.target.value)}
+              maxLength="1"
+              className="otp-input"
+              id={`${`otp-input-${index}`}`}
+            />
+          ))}
+        </div>
+        <button onClick={handleVerifyOTP} className="verify-button">Verify</button>
+        {verificationError && (
+          <div className="error-message" style={{
+            color: 'red', 
+            marginTop: '15px', 
+            marginBottom: '15px', // Add margin to the error message
+            textAlign: 'center',
+            fontSize: '14px'
+          }}>
+            {verificationError}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="App">
-      <button onClick={onBack} className="back-to-menu-small">&lt;</button>
-      
+      {currentScreen !== 'menu' && <BackButton onBack={onBack} />}
       {currentScreen === 'securitySettings' && (
         <div>
           <img src={sinchLogo} alt="Profile" className="logo profile-logo" />
@@ -239,9 +454,9 @@ function PasswordResetApp({ onBack, phoneNumber }) {
               {isTwoStepEnabled ? (
                 <p className="security-description active">
                   {phoneNumber ? (
-                    <span>An additional layer of security is enabled to protect your account. You will receive a SMS one time passcode on {maskPhoneNumber(phoneNumber)} to verify it is you.</span>
+                    <span> Your account is protected by two-step verification. We will confirm your password reset by first sending you an OTP code on {maskPhoneNumber(phoneNumber)}.</span>
                   ) : (
-                    <span>An additional layer of security is enabled to protect your account. You will receive a SMS one time passcode to verify it is you.</span>
+                    <span>Your account is protected by two-step verification. We will confirm your password reset by first sending you an OTP code</span>
                   )}
                 </p>
               ) : (
@@ -254,7 +469,7 @@ function PasswordResetApp({ onBack, phoneNumber }) {
             <div className="error-placeholder">
               {isTwoStepEnabled && !phoneNumber && (
                 <p className="error-message" style={{ color: 'red' }}>
-                  Please enter the phone number in the onboarding flow.
+                  Please add a phone number in the profile settings.
                 </p>
               )}
             </div>
@@ -263,7 +478,7 @@ function PasswordResetApp({ onBack, phoneNumber }) {
               className="lookup-button reset-password-button"
               disabled={isTwoStepEnabled && !phoneNumber}
             >
-              Reset Password
+              Click to continue
             </button>
           </div>
         </div>
